@@ -1,0 +1,286 @@
+import React, { useState } from 'react';
+import { FileText, Users, Target, Briefcase, Download, Plus, Trash2 } from 'lucide-react';
+
+const BriefSystem = () => {
+  const [activeTab, setActiveTab] = useState('brief');
+  const [briefData, setBriefData] = useState({
+    projectName: '',
+    clientName: '',
+    industry: '',
+    projectType: 'branding',
+    budget: '',
+    timeline: '',
+    objectives: [''],
+    targetAudience: '',
+    competitors: [''],
+    brandValues: [''],
+    currentSituation: '',
+    desiredOutcomes: [''],
+    deliverables: [''],
+    constraints: '',
+    references: [''],
+    additionalNotes: ''
+  });
+
+  const projectTypes = [
+    { value: 'branding', label: 'Branding Completo', workflow: 'WORKFLOW 1' },
+    { value: 'campaign', label: 'Campaña Digital', workflow: 'WORKFLOW 2' },
+    { value: 'redesign', label: 'Rediseño de Marca', workflow: 'WORKFLOW 3' },
+    { value: 'consulting', label: 'Consultoría Estratégica', workflow: 'WORKFLOW 4' }
+  ];
+
+  const agents = [
+    { id: 'sales', name: 'Sales Manager', icon: '🤝', desc: 'Gestión comercial y cierre de proyectos' },
+    { id: 'admin', name: 'Administrative Manager', icon: '📋', desc: 'Coordinación operativa y gestión de proyectos' },
+    { id: 'creative', name: 'Creative Director', icon: '🎨', desc: 'Visión estratégica creativa y dirección conceptual' },
+    { id: 'designer', name: 'Designer', icon: '✏️', desc: 'Ejecución visual de identidad de marca' },
+    { id: 'marketing', name: 'Marketing Manager', icon: '📊', desc: 'Estrategia de marketing integral y posicionamiento' },
+    { id: 'finance', name: 'Finance Manager', icon: '💰', desc: 'Gestión presupuestaria, pricing y rentabilidad' },
+    { id: 'social', name: 'Social Media Manager', icon: '📱', desc: 'Estrategia y gestión de presencia en redes sociales' },
+    { id: 'digital', name: 'Digital Marketing Manager', icon: '🌐', desc: 'Estrategias digitales (SEO, SEM, conversión)' },
+    { id: 'prompt', name: 'Prompt Engineer', icon: '🤖', desc: 'Optimización de prompts para herramientas AI' }
+  ];
+
+  const handleArrayInput = (field, index, value) => {
+    const newArray = [...briefData[field]];
+    newArray[index] = value;
+    setBriefData({ ...briefData, [field]: newArray });
+  };
+
+  const addArrayItem = (field) => {
+    setBriefData({ ...briefData, [field]: [...briefData[field], ''] });
+  };
+
+  const removeArrayItem = (field, index) => {
+    const newArray = briefData[field].filter((_, i) => i !== index);
+    setBriefData({ ...briefData, [field]: newArray });
+  };
+
+  const generateBrief = () => {
+    const doc = `BRIEF DE PROYECTO - FACTOR360 AI AGENCY
+
+INFORMACIÓN GENERAL
+Proyecto: ${briefData.projectName || '[Por completar]'}
+Cliente: ${briefData.clientName || '[Por completar]'}
+Industria: ${briefData.industry || '[Por completar]'}
+Tipo: ${projectTypes.find(pt => pt.value === briefData.projectType)?.label}
+
+RECURSOS
+Presupuesto: ${briefData.budget || '[Por definir]'}
+Timeline: ${briefData.timeline || '[Por definir]'}
+
+OBJETIVOS
+${briefData.objectives.filter(o => o).map((obj, i) => `${i + 1}. ${obj}`).join('\n') || '[Por definir]'}
+
+AUDIENCIA
+${briefData.targetAudience || '[Por definir]'}
+
+COMPETENCIA
+${briefData.competitors.filter(c => c).map((c, i) => `${i + 1}. ${c}`).join('\n') || '[Por analizar]'}
+
+VALORES DE MARCA
+${briefData.brandValues.filter(v => v).map(v => `- ${v}`).join('\n') || '[Por definir]'}
+
+SITUACIÓN ACTUAL
+${briefData.currentSituation || '[Por analizar]'}
+
+RESULTADOS DESEADOS
+${briefData.desiredOutcomes.filter(o => o).map((o, i) => `${i + 1}. ${o}`).join('\n') || '[Por definir]'}
+
+ENTREGABLES
+${briefData.deliverables.filter(d => d).map(d => `- ${d}`).join('\n') || '[Por definir]'}
+
+RESTRICCIONES
+${briefData.constraints || '[Ninguna especificada]'}
+
+REFERENCIAS
+${briefData.references.filter(r => r).map((r, i) => `${i + 1}. ${r}`).join('\n') || '[Sin referencias]'}
+
+NOTAS ADICIONALES
+${briefData.additionalNotes || '[Sin notas]'}
+
+Factor360 - "No se trata de que te vean, lo importante es que te entiendan"`;
+
+    const blob = new Blob([doc], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `Brief_${briefData.projectName || 'proyecto'}.txt`;
+    a.click();
+  };
+
+  return (
+    <div className="min-h-screen bg-gray-50 p-6">
+      <div className="max-w-6xl mx-auto">
+        <div className="bg-white rounded-lg shadow-md p-6 mb-6">
+          <h1 className="text-3xl font-bold text-gray-800 mb-2">Factor360 AI Agency</h1>
+          <p className="text-gray-600 italic">No se trata de que te vean, lo importante es que te entiendan</p>
+        </div>
+
+        <div className="flex gap-2 mb-6">
+          <button onClick={() => setActiveTab('brief')} className={`px-4 py-2 rounded ${activeTab === 'brief' ? 'bg-blue-600 text-white' : 'bg-white text-gray-700'}`}>
+            Brief
+          </button>
+          <button onClick={() => setActiveTab('agents')} className={`px-4 py-2 rounded ${activeTab === 'agents' ? 'bg-blue-600 text-white' : 'bg-white text-gray-700'}`}>
+            Agentes
+          </button>
+        </div>
+
+        {activeTab === 'brief' && (
+          <div className="bg-white rounded-lg shadow-md p-6">
+            <div className="flex justify-between items-center mb-6">
+              <h2 className="text-2xl font-bold">Template de Brief</h2>
+              <button onClick={generateBrief} className="flex items-center gap-2 bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">
+                <Download className="w-4 h-4" />
+                Exportar
+              </button>
+            </div>
+
+            <div className="space-y-6">
+              <div className="bg-blue-50 p-4 rounded">
+                <h3 className="font-bold mb-3">Información General</h3>
+                <div className="grid grid-cols-2 gap-4">
+                  <input type="text" value={briefData.projectName} onChange={(e) => setBriefData({...briefData, projectName: e.target.value})} placeholder="Nombre del Proyecto" className="p-2 border rounded" />
+                  <input type="text" value={briefData.clientName} onChange={(e) => setBriefData({...briefData, clientName: e.target.value})} placeholder="Cliente" className="p-2 border rounded" />
+                  <input type="text" value={briefData.industry} onChange={(e) => setBriefData({...briefData, industry: e.target.value})} placeholder="Industria" className="p-2 border rounded" />
+                  <select value={briefData.projectType} onChange={(e) => setBriefData({...briefData, projectType: e.target.value})} className="p-2 border rounded">
+                    {projectTypes.map(pt => <option key={pt.value} value={pt.value}>{pt.label}</option>)}
+                  </select>
+                  <input type="text" value={briefData.budget} onChange={(e) => setBriefData({...briefData, budget: e.target.value})} placeholder="Presupuesto" className="p-2 border rounded" />
+                  <input type="text" value={briefData.timeline} onChange={(e) => setBriefData({...briefData, timeline: e.target.value})} placeholder="Timeline" className="p-2 border rounded" />
+                </div>
+              </div>
+
+              <div className="bg-green-50 p-4 rounded">
+                <h3 className="font-bold mb-3">Objetivos</h3>
+                {briefData.objectives.map((obj, i) => (
+                  <div key={i} className="flex gap-2 mb-2">
+                    <input type="text" value={obj} onChange={(e) => handleArrayInput('objectives', i, e.target.value)} placeholder={`Objetivo ${i + 1}`} className="flex-1 p-2 border rounded" />
+                    {briefData.objectives.length > 1 && (
+                      <button onClick={() => removeArrayItem('objectives', i)} className="px-3 bg-red-500 text-white rounded">
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    )}
+                  </div>
+                ))}
+                <button onClick={() => addArrayItem('objectives')} className="text-green-700 font-semibold mt-2">+ Añadir Objetivo</button>
+              </div>
+
+              <div className="bg-purple-50 p-4 rounded">
+                <h3 className="font-bold mb-3">Audiencia Objetivo</h3>
+                <textarea value={briefData.targetAudience} onChange={(e) => setBriefData({...briefData, targetAudience: e.target.value})} rows="3" placeholder="Describe la audiencia..." className="w-full p-2 border rounded" />
+              </div>
+
+              <div className="bg-orange-50 p-4 rounded">
+                <h3 className="font-bold mb-3">Competencia</h3>
+                {briefData.competitors.map((comp, i) => (
+                  <div key={i} className="flex gap-2 mb-2">
+                    <input type="text" value={comp} onChange={(e) => handleArrayInput('competitors', i, e.target.value)} placeholder={`Competidor ${i + 1}`} className="flex-1 p-2 border rounded" />
+                    {briefData.competitors.length > 1 && (
+                      <button onClick={() => removeArrayItem('competitors', i)} className="px-3 bg-red-500 text-white rounded">
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    )}
+                  </div>
+                ))}
+                <button onClick={() => addArrayItem('competitors')} className="text-orange-700 font-semibold mt-2">+ Añadir Competidor</button>
+              </div>
+
+              <div className="bg-pink-50 p-4 rounded">
+                <h3 className="font-bold mb-3">Valores de Marca</h3>
+                {briefData.brandValues.map((val, i) => (
+                  <div key={i} className="flex gap-2 mb-2">
+                    <input type="text" value={val} onChange={(e) => handleArrayInput('brandValues', i, e.target.value)} placeholder={`Valor ${i + 1}`} className="flex-1 p-2 border rounded" />
+                    {briefData.brandValues.length > 1 && (
+                      <button onClick={() => removeArrayItem('brandValues', i)} className="px-3 bg-red-500 text-white rounded">
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    )}
+                  </div>
+                ))}
+                <button onClick={() => addArrayItem('brandValues')} className="text-pink-700 font-semibold mt-2">+ Añadir Valor</button>
+              </div>
+
+              <div className="bg-gray-50 p-4 rounded">
+                <h3 className="font-bold mb-3">Situación Actual</h3>
+                <textarea value={briefData.currentSituation} onChange={(e) => setBriefData({...briefData, currentSituation: e.target.value})} rows="3" placeholder="Describe la situación actual..." className="w-full p-2 border rounded" />
+              </div>
+
+              <div className="bg-indigo-50 p-4 rounded">
+                <h3 className="font-bold mb-3">Resultados Deseados</h3>
+                {briefData.desiredOutcomes.map((out, i) => (
+                  <div key={i} className="flex gap-2 mb-2">
+                    <input type="text" value={out} onChange={(e) => handleArrayInput('desiredOutcomes', i, e.target.value)} placeholder={`Resultado ${i + 1}`} className="flex-1 p-2 border rounded" />
+                    {briefData.desiredOutcomes.length > 1 && (
+                      <button onClick={() => removeArrayItem('desiredOutcomes', i)} className="px-3 bg-red-500 text-white rounded">
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    )}
+                  </div>
+                ))}
+                <button onClick={() => addArrayItem('desiredOutcomes')} className="text-indigo-700 font-semibold mt-2">+ Añadir Resultado</button>
+              </div>
+
+              <div className="bg-cyan-50 p-4 rounded">
+                <h3 className="font-bold mb-3">Entregables</h3>
+                {briefData.deliverables.map((del, i) => (
+                  <div key={i} className="flex gap-2 mb-2">
+                    <input type="text" value={del} onChange={(e) => handleArrayInput('deliverables', i, e.target.value)} placeholder={`Entregable ${i + 1}`} className="flex-1 p-2 border rounded" />
+                    {briefData.deliverables.length > 1 && (
+                      <button onClick={() => removeArrayItem('deliverables', i)} className="px-3 bg-red-500 text-white rounded">
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    )}
+                  </div>
+                ))}
+                <button onClick={() => addArrayItem('deliverables')} className="text-cyan-700 font-semibold mt-2">+ Añadir Entregable</button>
+              </div>
+
+              <div className="bg-red-50 p-4 rounded">
+                <h3 className="font-bold mb-3">Restricciones</h3>
+                <textarea value={briefData.constraints} onChange={(e) => setBriefData({...briefData, constraints: e.target.value})} rows="2" placeholder="Limitaciones..." className="w-full p-2 border rounded" />
+              </div>
+
+              <div className="bg-yellow-50 p-4 rounded">
+                <h3 className="font-bold mb-3">Referencias</h3>
+                {briefData.references.map((ref, i) => (
+                  <div key={i} className="flex gap-2 mb-2">
+                    <input type="text" value={ref} onChange={(e) => handleArrayInput('references', i, e.target.value)} placeholder="URL o descripción" className="flex-1 p-2 border rounded" />
+                    {briefData.references.length > 1 && (
+                      <button onClick={() => removeArrayItem('references', i)} className="px-3 bg-red-500 text-white rounded">
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    )}
+                  </div>
+                ))}
+                <button onClick={() => addArrayItem('references')} className="text-yellow-700 font-semibold mt-2">+ Añadir Referencia</button>
+              </div>
+
+              <div className="bg-teal-50 p-4 rounded">
+                <h3 className="font-bold mb-3">Notas Adicionales</h3>
+                <textarea value={briefData.additionalNotes} onChange={(e) => setBriefData({...briefData, additionalNotes: e.target.value})} rows="3" placeholder="Notas..." className="w-full p-2 border rounded" />
+              </div>
+            </div>
+          </div>
+        )}
+
+        {activeTab === 'agents' && (
+          <div className="bg-white rounded-lg shadow-md p-6">
+            <h2 className="text-2xl font-bold mb-6">Directorio de Agentes</h2>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              {agents.map(agent => (
+                <div key={agent.id} className="border-2 rounded-lg p-4 hover:shadow-lg transition">
+                  <div className="text-4xl mb-2 text-center">{agent.icon}</div>
+                  <h3 className="font-bold text-center mb-2">{agent.name}</h3>
+                  <p className="text-sm text-gray-600">{agent.desc}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+export default BriefSystem;
